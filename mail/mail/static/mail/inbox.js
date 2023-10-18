@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', function() {
 	document.querySelector('#sent').addEventListener('click', () => load_mailbox('sent'));
 	document.querySelector('#archived').addEventListener('click', () => load_mailbox('archive'));
 	document.querySelector('#compose').addEventListener('click', compose_email);
+	document.querySelector('#btnreply').addEventListener('click', compose_email);
 	document.querySelector('#sendbtn').addEventListener('click', function () {submitmail();return false;} );
 	document.querySelector('#btnarchive').addEventListener('click', function () {archivemail(txtmailid.value, bArchive);return false;} );
 			
@@ -18,14 +19,26 @@ document.addEventListener('DOMContentLoaded', function() {
 function compose_email() {
   //~ alert(document.querySelector('#emails-view').style.display);
   // Show compose view and hide other views
+  
+  if(document.querySelector('#mail-view').style.display != 'none'){
+	document.querySelector('#compose-recipients').value = lblFrom.innerHTML;
+	document.querySelector('#compose-subject').value = 'RE: ' + lblSubject.innerHTML;
+	document.querySelector('#compose-body').value = '\n \nQuoted text: ' + txtMailBody.value;
+	
+  }
+  else{
+			// Clear out composition fields
+	  document.querySelector('#compose-recipients').value = '';
+	  document.querySelector('#compose-subject').value = '';
+	  document.querySelector('#compose-body').value = '';
+  }
+
   document.querySelector('#emails-view').style.display = document.querySelector('#emails-list').style.display = document.querySelector('#mail-view').style.display = 'none';
   document.querySelector('#compose-view').style.display = 'block';
-
-  // Clear out composition fields
-  document.querySelector('#compose-recipients').value = '';
-  document.querySelector('#compose-subject').value = '';
-  document.querySelector('#compose-body').value = '';
   
+  body = document.querySelector('#compose-body');
+  body.setSelectionRange(0, 0);
+  body.focus();
 
 }
 
