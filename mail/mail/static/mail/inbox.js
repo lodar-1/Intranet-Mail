@@ -19,11 +19,16 @@ document.addEventListener('DOMContentLoaded', function() {
 function compose_email() {
   //~ alert(document.querySelector('#emails-view').style.display);
   // Show compose view and hide other views
-  
   if(document.querySelector('#mail-view').style.display != 'none'){
 	document.querySelector('#compose-recipients').value = lblFrom.innerHTML;
-	document.querySelector('#compose-subject').value = 'RE: ' + lblSubject.innerHTML;
-	document.querySelector('#compose-body').value = '\n \nQuoted text: ' + txtMailBody.value;
+	subject = document.querySelector('#compose-subject');
+	subject.value = lblSubject.innerHTML;
+	if(subject.value.substring(0,3).toUpperCase()!= 'RE:'){
+		subject.value = 'Re: ' + subject.value;
+	}
+	
+	
+	document.querySelector('#compose-body').value = '\n \nOn ' + lblTimestamp.innerHTML + ' ' + lblFrom.innerHTML + ' wrote: \n' + txtMailBody.value;
 	
   }
   else{
@@ -57,7 +62,6 @@ function load_mailbox(mailbox) {
 		.then(response => response.json())
 		.then(emails => {
 			// Print emails
-			//console.log(emails);
 			emails.forEach(function(item) {displayemaillist(item, true)});
 			});
 		document.querySelector('#btnarchive').value = "Archive";
@@ -70,7 +74,6 @@ function load_mailbox(mailbox) {
 		.then(response => response.json())
 		.then(emails => {
 			// Print emails
-			//console.log(emails);
 			emails.forEach(function(item) {displayemaillist(item, false)});
 			});	
 	}
@@ -81,7 +84,6 @@ function load_mailbox(mailbox) {
 		.then(response => response.json())
 		.then(emails => {
 			// Print emails
-			//console.log(emails);
 			emails.forEach(function(item) {displayemaillist(item, false)});
 			});
 		document.querySelector('#btnarchive').value = "Restore";		
@@ -121,7 +123,7 @@ function submitmail(){
 	.then(response => response.json())
 	.then(result => {
 		// Print result
-		console.log(result);
+		//~ console.log(result);
 	});
 	load_mailbox('inbox');
 }
@@ -138,16 +140,12 @@ function viewmail(mailid){
 	fetch(`/emails/${mailid}`)
 		.then(response => response.json())
 		.then(email => {
-			// Print email
-			//console.log(email);
-			//~ lblFrom = document.querySelector('#lblFrom');
 			lblFrom.innerHTML = email.sender;
 			lblTo.innerHTML = email.recipients;
 			lblSubject.innerHTML = email.subject;
 			lblTimestamp.innerHTML = email.timestamp;
 			txtMailBody.value = email.body;
 			document.getElementById('txtmailid').value = mailid;
-			//alert(txtmailid.value);
 			// ... Mark as read ...
 			fetch(`/emails/${mailid}`, {
 			  method: 'PUT',
